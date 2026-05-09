@@ -1,0 +1,16 @@
+export const colors = {
+  bg: '#1B1614',
+  panel: '#27201D',
+  panelSoft: '#2F2723',
+  panelDeep: '#15110F',
+  accent: '#E8C39E',
+  accentInk: '#1B1614',
+  secondary: '#C46A4A',
+  text: '#F2EBE2',
+  muted: '#9A8B81',
+  border: 'rgba(232,195,158,0.12)',
+  borderSoft: 'rgba(232,195,158,0.06)',
+  success: '#A8C4A2',
+  error: '#D77260',
+  info: '#6B8AC4',
+} as const;

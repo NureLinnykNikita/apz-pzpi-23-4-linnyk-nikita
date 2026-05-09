@@ -1,0 +1,308 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Achievement {
+  achievementId  Int       @id @default(autoincrement()) @map("achievement_id")
+  code           String    @unique @db.VarChar(50)
+  title          String    @db.VarChar(100)
+  description    String
+  category       String?   @db.VarChar(50)
+  iconUrl        String?   @map("icon_url")
+  conditionType  String    @map("condition_type") @db.VarChar(50)
+  conditionValue Int?      @map("condition_value")
+  createdAt      DateTime? @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt      DateTime? @default(now()) @map("updated_at") @db.Timestamp(6)
+
+  userAchievements UserAchievement[]
+
+  @@map("achievements")
+}
+
+model ConversationParticipant {
+  conversationId  String          @map("conversation_id") @db.Uuid
+  participantId   String          @map("participant_id") @db.Uuid
+  participantType ParticipantType @map("participant_type")
+  joinedAt        DateTime        @default(now()) @map("joined_at") @db.Timestamptz(6)
+
+  conversation Conversation @relation(fields: [conversationId], references: [conversationId], onDelete: Cascade)
+  user         User         @relation(fields: [participantId], references: [userId], onDelete: Cascade)
+
+  @@id([conversationId, participantId, participantType])
+  @@map("conversation_participants")
+}
+
+model Conversation {
+  conversationId String   @id @default(dbgenerated("gen_random_uuid()")) @map("conversation_id") @db.Uuid
+  title          String?
+  isGroup        Boolean  @default(false) @map("is_group")
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  participants ConversationParticipant[]
+  messages     Message[]
+
+  @@map("conversations")
+}
+
+model Course {
+  courseId         Int         @id @default(autoincrement()) @map("course_id")
+  title            String      @db.VarChar(50)
+  description      String?
+  level            CourseLevel
+  createdAt        DateTime?   @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt        DateTime?   @default(now()) @map("updated_at") @db.Timestamp(6)
+  targetLanguageId Int         @map("target_language_id")
+
+  language    Language     @relation(fields: [targetLanguageId], references: [id])
+  enrollments Enrollment[]
+  lessons     Lesson[]
+
+  @@map("courses")
+}
+
+model Enrollment {
+  userId       String                 @map("user_id") @db.Uuid
+  courseId     Int                    @map("course_id")
+  status       EnrollmentCourseStatus @default(active)
+  progress     Int                    @default(0)
+  enrolledAt   DateTime               @default(now()) @map("enrolled_at") @db.Timestamp(6)
+  completedAt  DateTime?              @map("completed_at") @db.Timestamp(6)
+  lastLessonId Int?                   @map("last_lesson_id")
+
+  course Course  @relation(fields: [courseId], references: [courseId], onDelete: Cascade)
+  lesson Lesson? @relation(fields: [lastLessonId], references: [lessonId])
+  user   User    @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@id([userId, courseId])
+  @@map("enrollments")
+}
+
+model ExerciseProgress {
+  id            Int       @id @default(autoincrement())
+  userId        String    @map("user_id") @db.Uuid
+  exerciseId    Int       @map("exercise_id")
+  isCorrect     Boolean   @map("is_correct")
+  earnedPoints  Int?      @default(0) @map("earned_points")
+  attemptNumber Int?      @default(1) @map("attempt_number")
+  userAnswer    String?   @map("user_answer")
+  createdAt     DateTime? @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt     DateTime? @default(now()) @map("updated_at") @db.Timestamp(6)
+
+  exercise Exercise @relation(fields: [exerciseId], references: [exerciseId], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@map("exercise_progress")
+}
+
+model Exercise {
+  exerciseId    Int          @id @default(autoincrement()) @map("exercise_id")
+  lessonId      Int          @map("lesson_id")
+  type          ExerciseType
+  question      String
+  correctAnswer String       @map("correct_answer")
+  mediaUrl      String?      @map("media_url")
+  points        Int?         @default(1)
+  sequence      Int
+  metadata      Json?
+
+  progress ExerciseProgress[]
+  lesson   Lesson             @relation(fields: [lessonId], references: [lessonId], onDelete: Cascade)
+
+  @@unique([lessonId, sequence])
+  @@map("exercises")
+}
+
+model Language {
+  id   Int    @id @default(autoincrement())
+  code String @unique @db.VarChar(10)
+  name String @db.VarChar(50)
+
+  courses       Course[]
+  userLanguages UserLanguage[]
+  users         User[]
+
+  @@map("languages")
+}
+
+model Lesson {
+  lessonId    Int       @id @default(autoincrement()) @map("lesson_id")
+  courseId    Int       @map("course_id")
+  title       String    @db.VarChar(50)
+  description String?
+  sequence    Int
+  createdAt   DateTime? @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt   DateTime? @default(now()) @map("updated_at") @db.Timestamp(6)
+
+  course      Course       @relation(fields: [courseId], references: [courseId], onDelete: Cascade)
+  exercises   Exercise[]
+  enrollments Enrollment[]
+
+  @@unique([courseId, sequence])
+  @@map("lessons")
+}
+
+model Message {
+  messageId      String           @id @default(dbgenerated("gen_random_uuid()")) @map("message_id") @db.Uuid
+  conversationId String           @map("conversation_id") @db.Uuid
+  senderType     ParticipantType? @default(user) @map("sender_type")
+  senderId       String?          @map("sender_id") @db.Uuid
+  content        String
+  isRead         Boolean          @default(false) @map("is_read")
+  createdAt      DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  conversation Conversation @relation(fields: [conversationId], references: [conversationId], onDelete: Cascade)
+  sender       User?        @relation(fields: [senderId], references: [userId])
+
+  @@map("messages")
+}
+
+model UserAchievement {
+  userId        String    @map("user_id") @db.Uuid
+  achievementId Int       @map("achievement_id")
+  earnedAt      DateTime? @default(now()) @map("earned_at") @db.Timestamp(6)
+  isNotified    Boolean?  @default(false) @map("is_notified")
+
+  achievement Achievement @relation(fields: [achievementId], references: [achievementId], onDelete: Cascade)
+  user        User        @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@id([userId, achievementId])
+  @@map("user_achievements")
+}
+
+model UserLanguage {
+  id         Int    @id @default(autoincrement())
+  userId     String @map("user_id") @db.Uuid
+  languageId Int    @map("language_id")
+
+  language Language @relation(fields: [languageId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@unique([userId, languageId])
+  @@map("user_languages")
+}
+
+model User {
+  userId       String   @id @default(dbgenerated("gen_random_uuid()")) @map("user_id") @db.Uuid
+  username     String   @unique @db.VarChar(50)
+  email        String   @unique @db.VarChar(100)
+  passwordHash String   @map("password_hash")
+  avatarUrl    String?  @map("avatar_url")
+  bio          String?  @db.VarChar(300)
+  role         UserRole @default(user)
+  tokenVersion Int      @default(1) @map("token_version")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt    DateTime @default(now()) @map("updated_at") @db.Timestamp(6)
+
+  streak               Int      @default(0)
+  lastActivityAt       DateTime? @map("last_activity_at") @db.Timestamp(6)
+  dailyGoalMinutes     Int      @default(10) @map("daily_goal_minutes")
+  notificationsEnabled Boolean  @default(true) @map("notifications_enabled")
+  reminderTime         String?  @map("reminder_time") @db.VarChar(5)
+
+  nativeLanguageId Int?      @map("native_language_id")
+  nativeLanguage   Language? @relation(fields: [nativeLanguageId], references: [id])
+
+  conversations       ConversationParticipant[]
+  enrollments         Enrollment[]
+  progress            ExerciseProgress[]
+  messages            Message[]
+  achievements        UserAchievement[]
+  languages           UserLanguage[]
+  refreshTokens       RefreshToken[]
+  passwordResetTokens PasswordResetToken[]
+
+  @@map("users")
+}
+
+model PasswordResetToken {
+  id        String    @id @default(uuid()) @db.Uuid
+  tokenHash String    @unique @map("token_hash")
+  userId    String    @map("user_id") @db.Uuid
+  user      User      @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  expiresAt DateTime  @map("expires_at")
+  usedAt    DateTime? @map("used_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  @@map("password_reset_tokens")
+}
+
+model Permission {
+  id          Int     @id @default(autoincrement())
+  code        String  @unique @db.VarChar(50)
+  description String?
+
+  roles RolePermission[]
+
+  @@map("permissions")
+}
+
+model RolePermission {
+  role         UserRole
+  permissionId Int      @map("permission_id")
+
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([role, permissionId])
+  @@map("role_permissions")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid()) @db.Uuid
+  tokenHash String   @unique
+  userId    String   @map("user_id") @db.Uuid
+  user      User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  createdAt DateTime @default(now()) @map("created_at")
+  expiresAt DateTime @map("expires_at")
+
+  @@map("refresh_tokens")
+}
+
+enum CourseLevel {
+  A1
+  A2
+  B1
+  B2
+  C1
+  C2
+
+  @@map("course_level")
+}
+
+enum EnrollmentCourseStatus {
+  active
+  completed
+  canceled
+
+  @@map("enrollment_course_status")
+}
+
+enum ExerciseType {
+  reading
+  listening
+  writing
+  speaking
+  translation
+
+  @@map("exercise_type")
+}
+
+enum ParticipantType {
+  user
+  ai
+
+  @@map("participant_type")
+}
+
+enum UserRole {
+  user
+  admin
+  contentManager
+  moderator
+
+  @@map("user_role")
+}

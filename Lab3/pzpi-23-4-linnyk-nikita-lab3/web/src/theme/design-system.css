@@ -1,0 +1,156 @@
+/* LangBang Design System — Paper-dark · Sand & Terracotta */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --lb-bg: #1B1614;
+  --lb-panel: #27201D;
+  --lb-panel-soft: #2F2723;
+  --lb-panel-deep: #15110F;
+
+  --lb-accent: #E8C39E;
+  --lb-accent-ink: #1B1614;
+  --lb-secondary: #C46A4A;
+
+  --lb-text: #F2EBE2;
+  --lb-text-muted: #9A8B81;
+
+  --lb-line: rgba(232, 195, 158, 0.12);
+  --lb-line-soft: rgba(232, 195, 158, 0.06);
+
+  --lb-accent-tint:        rgba(232, 195, 158, 0.12);
+  --lb-accent-tint-strong: rgba(232, 195, 158, 0.22);
+
+  --lb-success: #A8C4A2;
+  --lb-danger: #D77260;
+  --lb-info: #6B8AC4;
+
+  --lb-font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --lb-font-display: 'Fraunces', Georgia, serif;
+  --lb-font-mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+
+  --lb-text-h1: 32px;
+  --lb-text-h2: 26px;
+  --lb-text-h3: 18px;
+  --lb-text-body: 14px;
+  --lb-text-meta: 13px;
+  --lb-text-small: 12px;
+  --lb-text-eyebrow: 11px;
+
+  --lb-w-regular: 400;
+  --lb-w-medium: 500;
+  --lb-w-semibold: 600;
+  --lb-w-bold: 700;
+  --lb-w-black: 800;
+
+  --lb-space-1: 4px;
+  --lb-space-2: 8px;
+  --lb-space-3: 12px;
+  --lb-space-4: 16px;
+  --lb-space-5: 20px;
+  --lb-space-6: 24px;
+  --lb-space-8: 32px;
+
+  --lb-radius-xs: 4px;
+  --lb-radius-sm: 8px;
+  --lb-radius-md: 10px;
+  --lb-radius-lg: 14px;
+  --lb-radius-xl: 16px;
+  --lb-radius-pill: 999px;
+
+  --lb-card-pad: 22px;
+  --lb-section-gap: 18px;
+
+  --lb-trans: 150ms ease;
+}
+
+[data-density="compact"] { --lb-card-pad: 16px; --lb-section-gap: 14px; }
+[data-density="comfy"]   { --lb-card-pad: 26px; --lb-section-gap: 22px; }
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: var(--lb-bg);
+  color: var(--lb-text);
+  font-family: var(--lb-font-sans);
+  font-size: var(--lb-text-body);
+  font-weight: var(--lb-w-medium);
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--lb-accent); text-decoration: none; }
+button { cursor: pointer; font-family: var(--lb-font-sans); }
+
+.lb-h1 {
+  font-size: var(--lb-text-h1);
+  font-weight: var(--lb-w-bold);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--lb-text);
+  margin: 0;
+}
+.lb-h2 {
+  font-size: var(--lb-text-h2);
+  font-weight: var(--lb-w-bold);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--lb-text);
+  margin: 0;
+}
+.lb-h3 {
+  font-size: var(--lb-text-h3);
+  font-weight: var(--lb-w-semibold);
+  letter-spacing: -0.01em;
+  color: var(--lb-text);
+  margin: 0;
+}
+.lb-body { font-size: var(--lb-text-body); font-weight: var(--lb-w-medium); color: var(--lb-text); line-height: 1.5; }
+.lb-meta { font-size: var(--lb-text-meta); font-weight: var(--lb-w-medium); color: var(--lb-text-muted); }
+.lb-eyebrow {
+  font-size: var(--lb-text-eyebrow);
+  font-weight: var(--lb-w-semibold);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--lb-text-muted);
+}
+.lb-mono { font-family: var(--lb-font-mono); font-variant-numeric: tabular-nums; letter-spacing: 0.06em; }
+.lb-display { font-family: var(--lb-font-display); font-weight: var(--lb-w-semibold); letter-spacing: -0.025em; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--lb-panel-deep); }
+::-webkit-scrollbar-thumb { background: var(--lb-panel-soft); border-radius: 3px; }
+
+/* ─── Light theme ─────────────────────────────────────────────────────────── */
+
+[data-theme="light"] {
+  /* Backgrounds — warm parchment / paper */
+  --lb-bg:         #F7F3EE;
+  --lb-panel:      #FFFFFF;
+  --lb-panel-soft: #F0EAE1;
+  --lb-panel-deep: #E6DDD2;
+
+  /* Accent — darkened sand for AA contrast on white */
+  --lb-accent:     #8C6035;
+  --lb-accent-ink: #FFFFFF;
+  --lb-secondary:  #AD4F30;
+
+  /* Text */
+  --lb-text:       #231710;
+  --lb-text-muted: #7A6554;
+
+  /* Lines */
+  --lb-line:      rgba(35, 23, 16, 0.11);
+  --lb-line-soft: rgba(35, 23, 16, 0.055);
+
+  --lb-accent-tint:        rgba(140, 96, 53, 0.12);
+  --lb-accent-tint-strong: rgba(140, 96, 53, 0.22);
+
+  /* Status */
+  --lb-success: #3A7A34;
+  --lb-danger:  #C03820;
+  --lb-info:    #2E52A0;
+}

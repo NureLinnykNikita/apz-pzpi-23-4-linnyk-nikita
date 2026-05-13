@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: langbang-db-setup
+spec:
+  backoffLimit: 2
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: db-setup
+          image: langbang-server:lab
+          imagePullPolicy: Never
+          command:
+            - sh
+            - -c
+            - npx prisma migrate deploy && npx prisma db seed
+          envFrom:
+            - configMapRef:
+                name: langbang-api-config
+            - secretRef:
+                name: langbang-api-secret

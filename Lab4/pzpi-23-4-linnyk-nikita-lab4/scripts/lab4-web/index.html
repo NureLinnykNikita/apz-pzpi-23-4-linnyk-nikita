@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="uk">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>LangBang Lab 4 Setup</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="header">
+        <div>
+          <h1>LangBang Lab 4 Setup</h1>
+          <p>Локальна вебпанель для Docker, Kubernetes, PostgreSQL і Locust.</p>
+        </div>
+        <div class="badge">localhost only</div>
+      </section>
+
+      <section class="grid">
+        <form id="deployForm" class="panel">
+          <div class="panelHead">
+            <h2>Deploy</h2>
+            <button type="submit">Run full deploy</button>
+          </div>
+
+          <label class="check">
+            <input name="skipBuild" type="checkbox" />
+            Skip Docker build
+          </label>
+
+          <label>
+            Database mode
+            <select name="databaseMode" id="databaseMode">
+              <option value="local">Local PostgreSQL in Kubernetes</option>
+              <option value="neon">External Neon PostgreSQL</option>
+            </select>
+          </label>
+
+          <div id="localDbFields" class="fields">
+            <label>
+              POSTGRES_DB
+              <input name="postgresDb" value="langbang" />
+            </label>
+            <label>
+              POSTGRES_USER
+              <input name="postgresUser" value="langbang" />
+            </label>
+            <label>
+              POSTGRES_PASSWORD
+              <input name="postgresPassword" value="langbang" type="password" />
+            </label>
+          </div>
+
+          <label id="neonField" class="hidden">
+            Neon DATABASE_URL
+            <input name="databaseUrl" placeholder="postgresql://..." />
+          </label>
+
+          <div class="fields two">
+            <label>
+              JWT_ACCESS_SECRET
+              <input name="jwtAccessSecret" value="lab-access-secret-change-me" />
+            </label>
+            <label>
+              JWT_REFRESH_SECRET
+              <input name="jwtRefreshSecret" value="lab-refresh-secret-change-me" />
+            </label>
+          </div>
+
+          <div class="fields three">
+            <label>
+              CLOUDINARY_CLOUD_NAME
+              <input name="cloudinaryCloudName" value="demo" />
+            </label>
+            <label>
+              CLOUDINARY_API_KEY
+              <input name="cloudinaryApiKey" value="demo" />
+            </label>
+            <label>
+              CLOUDINARY_API_SECRET
+              <input name="cloudinaryApiSecret" value="demo" type="password" />
+            </label>
+          </div>
+
+          <label>
+            Initial API replicas
+            <input name="replicas" type="number" min="1" max="8" value="1" />
+          </label>
+
+          <div class="envSection">
+            <div class="envHeader">
+              <span class="envLabel">Custom ENV variables</span>
+              <button type="button" id="addEnvBtn" class="ghost">+ Add variable</button>
+            </div>
+            <div id="envRows"></div>
+          </div>
+        </form>
+
+        <section class="panel">
+          <div class="panelHead">
+            <h2>Operations</h2>
+          </div>
+          <div class="ops">
+            <label>
+              API replicas
+              <input id="replicas" type="number" min="1" max="8" value="1" />
+            </label>
+            <button data-action="scale">Scale API</button>
+            <button data-action="port-forward">Start port-forward</button>
+            <button data-action="check">Check API</button>
+            <button data-action="install-locust">Install Locust</button>
+            <button data-action="start-locust">Start Locust UI</button>
+            <button data-action="cleanup" class="danger">Cleanup resources</button>
+          </div>
+        </section>
+      </section>
+
+      <section class="panel importPanel">
+        <div class="panelHead">
+          <h2>Import Data</h2>
+          <button id="importBtn">Import JSON</button>
+        </div>
+        <p class="hint">Вставте JSON у форматі адмін-експорту (languages, achievements, courses). Потрібний активний port-forward на localhost:5000.</p>
+        <textarea
+          id="importJson"
+          class="importTextarea"
+          rows="8"
+          spellcheck="false"
+          placeholder='{ "languages": [...], "achievements": [...], "courses": [...] }'
+        ></textarea>
+      </section>
+
+      <section class="panel logPanel">
+        <div class="panelHead">
+          <h2>Execution Log</h2>
+          <div id="status" class="status">Idle</div>
+        </div>
+        <pre id="log"></pre>
+      </section>
+    </main>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

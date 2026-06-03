@@ -8,9 +8,7 @@
   ],
   "scripts": {
     "server:dev": "npm run dev --workspace=server",
-    "mobile:start": "npm run start --workspace=mobile",
-    "mobile:android": "npm run android --workspace=mobile",
-    "mobile:ios": "npm run ios --workspace=mobile"
+    "lab4:web-setup": "node scripts/lab4-web-setup.mjs"
   },
   "engines": {
     "node": ">=20.0.0"
